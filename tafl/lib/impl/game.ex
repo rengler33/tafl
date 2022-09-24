@@ -33,7 +33,7 @@ defmodule Tafl.Impl.Game do
 
   defp accept_move(game, {old_location, new_location}, {_valid = true, _msg}) do
     new_game = move_piece(game, old_location, new_location)
-    %__MODULE__{new_game | state: :waiting, turn: alternate_turn(game.turn)}
+    %__MODULE__{new_game | state: :waiting, turn: alternate_turn(game.turn), message: ""}
   end
 
   defp accept_move(game, _, {_valid = false, msg}) do
@@ -46,12 +46,8 @@ defmodule Tafl.Impl.Game do
     %__MODULE__{game | spaces: new_spaces}
   end
 
-  defp alternate_turn(turn) do
-    case turn do
-      :p1 -> :p2
-      :p2 -> :p1
-    end
-  end
+  defp alternate_turn(:p1), do: :p2
+  defp alternate_turn(:p2), do: :p1
 
   #########################################
 

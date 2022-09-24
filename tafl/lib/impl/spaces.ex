@@ -43,13 +43,12 @@ defmodule Tafl.Impl.Spaces do
     |> Enum.chunk_every(@board_size)
   end
 
+  defp index_on_flat_board({1, y}), do: y - 1
+
   defp index_on_flat_board({x, y}) do
     # when row and colum counts start at 1, e.g. where {2, 3}
     # is second row, third column
     # i.e. 14th space/13th index in flat list
-    case x do
-      1 -> y - 1
-      _ -> (x - 1) * @board_size + y - 1
-    end
+    (x - 1) * @board_size + y - 1
   end
 end
