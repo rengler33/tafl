@@ -51,15 +51,18 @@ defmodule Tafl.Impl.Game do
 
   #########################################
 
+  # TODO these things need to eventually move to a proper text client
   def print(game) do
+    IO.puts("\n")
+    IO.puts(game.state)
+    IO.puts(game.turn)
+    IO.puts(game.message)
+    IO.puts("\n")
+
     render(game)
     |> Enum.map(&Enum.join(&1, " "))
     |> Enum.join("\n")
     |> IO.puts()
-
-    IO.puts(game.state)
-    IO.puts(game.turn)
-    game
   end
 
   defp render(game) do
