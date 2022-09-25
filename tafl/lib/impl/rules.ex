@@ -6,7 +6,7 @@ defmodule Tafl.Impl.Rules do
       &is_not_moving/2,
       &is_moving_off_the_board/2,
       &is_not_moving_within_row_or_column/2,
-      ## everything after here is related to the piece itself
+      # everything after here is related to the piece(s)
       &is_trying_to_move_from_a_space_without_a_piece/2,
       &is_not_players_turn/2,
       &is_stopping_on_hostile_square_when_not_king/2,
