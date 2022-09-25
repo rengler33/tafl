@@ -3,12 +3,14 @@ defmodule Tafl.Impl.Rules do
 
   def bad_move(game, move) do
     checks = [
+      &is_not_moving/2,
       &is_moving_off_the_board/2,
       &is_not_moving_within_row_or_column/2,
       ## everything after here is related to the piece itself
       &is_trying_to_move_from_a_space_without_a_piece/2,
       &is_not_players_turn/2,
-      &is_stopping_on_hostile_square_when_not_king/2
+      &is_stopping_on_hostile_square_when_not_king/2,
+      &is_trying_to_move_through_other_pieces/2
     ]
 
     check_bad_move(checks, game, move)
@@ -26,6 +28,14 @@ defmodule Tafl.Impl.Rules do
   end
 
   #########################################
+  # The function name should describe something wrong to do
+  # and return true if wrong thing was done
+
+  defp is_not_moving(_, {old_loc, new_loc}) do
+    msg = "You cannot move to the same space you are on."
+    res = old_loc == new_loc
+    {res, msg}
+  end
 
   defp is_moving_off_the_board(game, {_, {newx, newy}}) do
     msg = "You cannot move off the board."
@@ -58,6 +68,16 @@ defmodule Tafl.Impl.Rules do
     old_piece = Spaces.get_piece(game.spaces, old_loc)
     new_space = Spaces.get_space(game.spaces, new_loc)
     res = old_piece.kind != :king and new_space.kind in [:corner, :center]
+    {res, msg}
+  end
+
+  defp is_trying_to_move_through_other_pieces(game, move) do
+    msg = "You cannot move through or stop on another piece."
+
+    res =
+      Spaces.collect_spaces(game.spaces, move)
+      |> Enum.any?(fn space -> space.piece != nil end)
+
     {res, msg}
   end
 end

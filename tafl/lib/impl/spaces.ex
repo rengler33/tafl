@@ -51,4 +51,23 @@ defmodule Tafl.Impl.Spaces do
     # i.e. 14th space/13th index in flat list
     (x - 1) * @board_size + y - 1
   end
+
+  def collect_spaces(spaces, {{old_row, old_col}, {new_row, new_col}}) when old_row == new_row do
+    # collect the spaces between these two locations
+    # excluding the "old" space, including the new space
+    amount = if old_col <= new_col, do: new_col - old_col, else: old_col - new_col
+    leftmost = if old_col <= new_col, do: old_col, else: new_col - 1
+    Enum.slice(Enum.at(spaces, old_row - 1), leftmost, amount)
+  end
+
+  def collect_spaces(spaces, {{old_row, old_col}, {new_row, new_col}}) when old_col == new_col do
+    transpose(spaces)
+    |> collect_spaces({{old_col, old_row}, {new_col, new_row}})
+  end
+
+  defp transpose(spaces) do
+    spaces
+    |> Enum.zip()
+    |> Enum.map(&Tuple.to_list/1)
+  end
 end
