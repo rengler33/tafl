@@ -1,8 +1,18 @@
 defmodule TextClient.Runtime.RemoteTafl do
-  # TODO update this??
-  @remote_server :"tafl@rubs-lap"
+  @remote_server_name "tafl"
 
   def connect() do
-    :rpc.call(@remote_server, Tafl, :new_game, [])
+    connect(get_local_host_name())
+  end
+
+  def connect(hostname) do
+    :rpc.call(hostname, Tafl, :new_game, [])
+  end
+
+  defp get_local_host_name() do
+    {:ok, hostname} = :inet.gethostname()
+
+    (@remote_server_name <> "@" <> List.to_string(hostname))
+    |> String.to_atom()
   end
 end
