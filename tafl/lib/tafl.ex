@@ -9,6 +9,6 @@ defmodule Tafl do
   end
 
   def show_board(game_pid) do
-    GenServer.cast(game_pid, {:show_board})
+    GenServer.call(game_pid, {:show_board})
   end
 end

@@ -1,17 +1,15 @@
 defmodule Tafl.Impl.Game do
-  # makes iex less messy by showing less info
-  @derive {Inspect, only: [:turn, :state, :message]}
-
   defstruct(
     spaces: nil,
     turn: nil,
-    # waiting, over, invalid_move
+    # initializing, waiting, over, invalid_move
     state: :initializing,
     message: ""
   )
 
   alias Tafl.Impl.{Space, Spaces, GameConfiguration, Rules}
 
+  # TODO where is the best place for this?
   @board_size 11
 
   def new() do
@@ -51,6 +49,24 @@ defmodule Tafl.Impl.Game do
 
   #########################################
 
+  def render(game) do
+    rendered_spaces = render_spaces(game.spaces)
+
+    %{
+      spaces: rendered_spaces,
+      state: game.state,
+      message: game.message,
+      turn: game.turn
+    }
+  end
+
+  defp render_spaces(spaces) do
+    spaces
+    |> List.flatten()
+    |> Enum.map(&Space.render/1)
+    |> Enum.chunk_every(@board_size)
+  end
+
   # TODO these things need to eventually move to a proper text client
   def print(game) do
     IO.puts("\n")
@@ -59,16 +75,9 @@ defmodule Tafl.Impl.Game do
     IO.puts(game.message)
     IO.puts("\n")
 
-    render(game)
+    render_spaces(game.spaces)
     |> Enum.map(&Enum.join(&1, " "))
     |> Enum.join("\n")
     |> IO.puts()
-  end
-
-  defp render(game) do
-    game.spaces
-    |> List.flatten()
-    |> Enum.map(&Space.render/1)
-    |> Enum.chunk_every(@board_size)
   end
 end
