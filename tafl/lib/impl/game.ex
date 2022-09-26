@@ -66,18 +66,4 @@ defmodule Tafl.Impl.Game do
     |> Enum.map(&Space.render/1)
     |> Enum.chunk_every(@board_size)
   end
-
-  # TODO these things need to eventually move to a proper text client
-  def print(game) do
-    IO.puts("\n")
-    IO.puts(game.state)
-    IO.puts(game.turn)
-    IO.puts(game.message)
-    IO.puts("\n")
-
-    render_spaces(game.spaces)
-    |> Enum.map(&Enum.join(&1, " "))
-    |> Enum.join("\n")
-    |> IO.puts()
-  end
 end
