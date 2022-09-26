@@ -1,5 +1,5 @@
 defmodule Tafl.Impl.Space do
-  defstruct(kind: nil, piece: nil)
+  defstruct(kind: nil, piece: %{})
   # kind: corner, edge, basic, center
 
   alias Tafl.Impl.Piece
@@ -17,15 +17,18 @@ defmodule Tafl.Impl.Space do
   end
 
   def remove_piece(space) do
-    %__MODULE__{space | piece: nil}
+    %__MODULE__{space | piece: %{}}
   end
 
   #########################################
+
   def render(space) do
+    empty_map = %{}
+
     case {space.kind, space.piece} do
-      {:corner, nil} -> "X"
-      {:center, nil} -> "X"
-      {_, nil} -> " "
+      {:corner, ^empty_map} -> "X"
+      {:center, ^empty_map} -> "X"
+      {_, ^empty_map} -> " "
       {_, piece} -> Piece.render(piece)
     end
   end

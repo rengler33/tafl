@@ -76,7 +76,7 @@ defmodule Tafl.Impl.Rules do
 
     res =
       Spaces.collect_spaces(game.spaces, move)
-      |> Enum.any?(fn space -> space.piece != nil end)
+      |> Enum.any?(fn space -> space.piece != %{} end)
 
     {res, msg}
   end

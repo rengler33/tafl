@@ -1,22 +1,50 @@
 defmodule Tafl.Impl.Game do
   defstruct(
-    spaces: nil,
+    spaces: [],
     turn: nil,
     # initializing, waiting, over, invalid_move
     state: :initializing,
-    message: ""
+    message: "",
+    winner: nil
   )
 
-  alias Tafl.Impl.{Spaces, GameConfiguration, Rules}
+  alias Tafl.Impl.{Spaces, GameConfiguration, Rules, WinConditions}
 
   def new() do
     spaces = GameConfiguration.new_game_spaces(:basic)
     %__MODULE__{spaces: spaces, turn: :p2, state: :waiting}
   end
 
+  def make_move(game, _old_location, _new_location) when game.winner != nil do
+    %__MODULE__{game | message: "The game is already over."}
+  end
+
   def make_move(game, old_location, new_location) do
     move = {old_location, new_location}
-    accept_move(game, move, valid_move?(game, move))
+    game = accept_move(game, move, valid_move?(game, move))
+    evaluate_win(game, winner?(game))
+  end
+
+  def render(game) when game.state != :over do
+    rendered_spaces = Spaces.render_spaces(game.spaces)
+
+    %{
+      spaces: rendered_spaces,
+      state: game.state,
+      message: game.message,
+      turn: game.turn
+    }
+  end
+
+  def render(game) when game.state == :over do
+    rendered_spaces = Spaces.render_spaces(game.spaces)
+
+    %{
+      spaces: rendered_spaces,
+      state: game.state,
+      message: game.message,
+      winner: game.winner
+    }
   end
 
   #########################################
@@ -46,14 +74,19 @@ defmodule Tafl.Impl.Game do
 
   #########################################
 
-  def render(game) do
-    rendered_spaces = Spaces.render_spaces(game.spaces)
-
-    %{
-      spaces: rendered_spaces,
-      state: game.state,
-      message: game.message,
-      turn: game.turn
+  defp evaluate_win(game, {_winner = true, player}) do
+    %__MODULE__{
+      game
+      | state: :over,
+        winner: player,
+        message: "Congratulations #{player}, you win!",
+        turn: nil
     }
+  end
+
+  defp evaluate_win(game, _no_winner), do: game
+
+  defp winner?(game) do
+    WinConditions.check(game)
   end
 end

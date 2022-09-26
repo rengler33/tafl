@@ -20,4 +20,9 @@ defmodule Tafl.Runtime.Server do
     render = Game.render(game)
     {:reply, render, game}
   end
+
+  def handle_call({:game}, _from, game) do
+    # for debugging assistance
+    {:reply, game, game}
+  end
 end
