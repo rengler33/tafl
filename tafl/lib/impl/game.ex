@@ -7,10 +7,7 @@ defmodule Tafl.Impl.Game do
     message: ""
   )
 
-  alias Tafl.Impl.{Space, Spaces, GameConfiguration, Rules}
-
-  # TODO where is the best place for this?
-  @board_size 11
+  alias Tafl.Impl.{Spaces, GameConfiguration, Rules}
 
   def new() do
     spaces = GameConfiguration.new_game_spaces(:basic)
@@ -50,7 +47,7 @@ defmodule Tafl.Impl.Game do
   #########################################
 
   def render(game) do
-    rendered_spaces = render_spaces(game.spaces)
+    rendered_spaces = Spaces.render_spaces(game.spaces)
 
     %{
       spaces: rendered_spaces,
@@ -58,12 +55,5 @@ defmodule Tafl.Impl.Game do
       message: game.message,
       turn: game.turn
     }
-  end
-
-  defp render_spaces(spaces) do
-    spaces
-    |> List.flatten()
-    |> Enum.map(&Space.render/1)
-    |> Enum.chunk_every(@board_size)
   end
 end

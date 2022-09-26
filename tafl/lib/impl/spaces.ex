@@ -70,4 +70,11 @@ defmodule Tafl.Impl.Spaces do
     |> Enum.zip()
     |> Enum.map(&Tuple.to_list/1)
   end
+
+  def render_spaces(spaces) do
+    spaces
+    |> List.flatten()
+    |> Enum.map(&Space.render/1)
+    |> Enum.chunk_every(@board_size)
+  end
 end
