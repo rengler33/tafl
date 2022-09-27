@@ -10,9 +10,12 @@ defmodule TextClient.Impl.Play do
   end
 
   def interact({game, render}) do
+    IO.puts(IO.ANSI.clear())
     IO.puts("****************************************")
     IO.puts(feedback_for(render))
     IO.puts(current_board(render))
+    IO.write("\n\n")
+    IO.write(IO.ANSI.cursor_up(2))
     {old_loc, new_loc} = get_move()
     tally = Tafl.make_move(game, old_loc, new_loc)
     interact({game, tally})
