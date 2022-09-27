@@ -23,9 +23,12 @@ defmodule Tafl.Impl.Game do
     move = {old_location, new_location}
 
     accept_move(game, move, valid_move?(game, move))
-    |> perform_captures()
+    |> perform_captures(new_location)
     |> evaluate_win()
+    |> alternate_turn()
   end
+
+  #########################################
 
   def render(game) when game.state != :over do
     rendered_spaces = Spaces.render_spaces(game.spaces)
@@ -58,7 +61,7 @@ defmodule Tafl.Impl.Game do
 
   defp accept_move(game, {old_location, new_location}, {_valid = true, _msg}) do
     new_game = move_piece(game, old_location, new_location)
-    %__MODULE__{new_game | state: :waiting, turn: alternate_turn(game.turn), message: ""}
+    %__MODULE__{new_game | state: :waiting, message: ""}
   end
 
   defp accept_move(game, _, {_valid = false, msg}) do
@@ -73,11 +76,9 @@ defmodule Tafl.Impl.Game do
 
   #########################################
 
-  defp perform_captures(game) do
-    # alternate turn because earlier function already alternated game turn
-    # but perform_captures is still operating on the "current player" that
-    # is making this turn
-    new_spaces = Captures.perform_captures(game.spaces, alternate_turn(game.turn))
+  defp perform_captures(game, new_location) do
+    # new_spaces = Captures.perform_captures2(game.spaces, game.turn, new_location)
+    new_spaces = Captures.perform_captures(game.spaces, game.turn)
     %__MODULE__{game | spaces: new_spaces}
   end
 
@@ -90,8 +91,7 @@ defmodule Tafl.Impl.Game do
       game
       | state: :over,
         winner: player,
-        message: "Congratulations #{player}, you win!",
-        turn: nil
+        message: "Congratulations #{player}, you win!"
     }
   end
 
@@ -101,6 +101,14 @@ defmodule Tafl.Impl.Game do
     WinConditions.check(game)
   end
 
-  defp alternate_turn(:p1), do: :p2
-  defp alternate_turn(:p2), do: :p1
+  #########################################
+
+  defp alternate_turn(game) when game.state not in [:invalid_move, :over] do
+    %__MODULE__{game | turn: do_alternate_turn(game.turn)}
+  end
+
+  defp alternate_turn(game), do: game
+
+  defp do_alternate_turn(:p1), do: :p2
+  defp do_alternate_turn(:p2), do: :p1
 end
