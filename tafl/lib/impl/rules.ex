@@ -1,5 +1,5 @@
 defmodule Tafl.Impl.Rules do
-  alias Tafl.Impl.Spaces
+  alias Tafl.Impl.{Piece, Spaces}
 
   def bad_move(game, move) do
     checks = [
@@ -52,7 +52,7 @@ defmodule Tafl.Impl.Rules do
   defp is_trying_to_move_from_a_space_without_a_piece(game, {old_loc, _}) do
     msg = "You cannot move a piece from an empty space."
     piece = Spaces.get_piece(game.spaces, old_loc)
-    res = piece == nil
+    res = piece == %Piece{}
     {res, msg}
   end
 
@@ -76,7 +76,7 @@ defmodule Tafl.Impl.Rules do
 
     res =
       Spaces.collect_spaces(game.spaces, move)
-      |> Enum.any?(fn space -> space.piece != %{} end)
+      |> Enum.any?(fn space -> space.piece != %Piece{} end)
 
     {res, msg}
   end

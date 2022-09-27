@@ -65,7 +65,7 @@ defmodule Tafl.Impl.Spaces do
     |> collect_spaces({{old_col, old_row}, {new_col, new_row}})
   end
 
-  defp transpose(spaces) do
+  def transpose(spaces) do
     spaces
     |> Enum.zip()
     |> Enum.map(&Tuple.to_list/1)

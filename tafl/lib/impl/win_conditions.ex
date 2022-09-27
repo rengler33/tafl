@@ -1,7 +1,8 @@
 defmodule Tafl.Impl.WinConditions do
   def check(game) do
     checks = [
-      &king_in_corner/1
+      &king_in_corner/1,
+      &king_has_been_captured/1
     ]
 
     check_win(checks, game)
@@ -30,6 +31,19 @@ defmodule Tafl.Impl.WinConditions do
     case winner do
       true -> {true, :p1}
       _ -> false
+    end
+  end
+
+  defp king_has_been_captured(game) do
+    king_still_in_play =
+      game.spaces
+      |> List.flatten()
+      |> Enum.filter(&(Map.get(&1.piece, :kind, nil) == :king))
+      |> Enum.any?()
+
+    case king_still_in_play do
+      true -> false
+      false -> {true, :p2}
     end
   end
 end

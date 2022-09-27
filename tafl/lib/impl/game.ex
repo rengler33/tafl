@@ -8,7 +8,7 @@ defmodule Tafl.Impl.Game do
     winner: nil
   )
 
-  alias Tafl.Impl.{Spaces, GameConfiguration, Rules, WinConditions}
+  alias Tafl.Impl.{Captures, GameConfiguration, Rules, Spaces, WinConditions}
 
   def new() do
     spaces = GameConfiguration.new_game_spaces(:basic)
@@ -21,8 +21,10 @@ defmodule Tafl.Impl.Game do
 
   def make_move(game, old_location, new_location) do
     move = {old_location, new_location}
-    game = accept_move(game, move, valid_move?(game, move))
-    evaluate_win(game, winner?(game))
+
+    accept_move(game, move, valid_move?(game, move))
+    |> perform_captures()
+    |> evaluate_win()
   end
 
   def render(game) when game.state != :over do
@@ -69,10 +71,19 @@ defmodule Tafl.Impl.Game do
     %__MODULE__{game | spaces: new_spaces}
   end
 
-  defp alternate_turn(:p1), do: :p2
-  defp alternate_turn(:p2), do: :p1
-
   #########################################
+
+  defp perform_captures(game) do
+    # alternate turn because earlier function already alternated game turn
+    # but perform_captures is still operating on the "current player" that
+    # is making this turn
+    new_spaces = Captures.perform_captures(game.spaces, alternate_turn(game.turn))
+    %__MODULE__{game | spaces: new_spaces}
+  end
+
+  defp evaluate_win(game) do
+    evaluate_win(game, winner?(game))
+  end
 
   defp evaluate_win(game, {_winner = true, player}) do
     %__MODULE__{
@@ -89,4 +100,7 @@ defmodule Tafl.Impl.Game do
   defp winner?(game) do
     WinConditions.check(game)
   end
+
+  defp alternate_turn(:p1), do: :p2
+  defp alternate_turn(:p2), do: :p1
 end
