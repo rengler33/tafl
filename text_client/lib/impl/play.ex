@@ -4,9 +4,8 @@ defmodule TextClient.Impl.Play do
     interact({game, render})
   end
 
-  def interact({_game, _render = %{game_state: :over}}) do
-    # TODO update when win conditions are implemented
-    IO.puts("Congratulations. You won!")
+  def interact({_game, render = %{state: :over}}) do
+    IO.puts("Congratulations, #{render_player(render.winner)}. You won!")
   end
 
   def interact({game, render}) do
@@ -17,18 +16,14 @@ defmodule TextClient.Impl.Play do
     IO.write("\n\n")
     IO.write(IO.ANSI.cursor_up(2))
     {old_loc, new_loc} = get_move()
-    tally = Tafl.make_move(game, old_loc, new_loc)
-    interact({game, tally})
+    render = Tafl.make_move(game, old_loc, new_loc)
+    interact({game, render})
   end
 
   ##################################################
 
   def feedback_for(render = %{state: :waiting}) do
     "It is #{render_player(render.turn)}'s turn."
-  end
-
-  def feedback_for(render = %{state: :over}) do
-    "Congratulations #{render_player(render.winner)}!"
   end
 
   def feedback_for(render = %{state: :invalid_move}) do
