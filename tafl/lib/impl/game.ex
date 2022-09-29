@@ -77,8 +77,9 @@ defmodule Tafl.Impl.Game do
   #########################################
 
   defp perform_captures(game, new_location) do
+    new_spaces = Captures.perform_captures3(game.spaces, game.turn, new_location)
     # new_spaces = Captures.perform_captures2(game.spaces, game.turn, new_location)
-    new_spaces = Captures.perform_captures(game.spaces, game.turn)
+    # new_spaces = Captures.perform_captures(game.spaces, game.turn)
     %__MODULE__{game | spaces: new_spaces}
   end
 

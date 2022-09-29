@@ -2,6 +2,8 @@ defmodule Tafl.Impl.Spaces do
   @board_size 11
   alias Tafl.Impl.Space
 
+  def board_size, do: @board_size
+
   def remove_piece(spaces, location) do
     index_to_update = index_on_flat_board(location)
     piece = get_piece(spaces, location)
@@ -43,9 +45,10 @@ defmodule Tafl.Impl.Spaces do
     |> Enum.chunk_every(@board_size)
   end
 
-  defp index_on_flat_board({1, y}), do: y - 1
+  # TODO was this one necessary?? other func should handle fine
+  # def index_on_flat_board({1, y}), do: y - 1
 
-  defp index_on_flat_board({x, y}) do
+  def index_on_flat_board({x, y}) do
     # when row and colum counts start at 1, e.g. where {2, 3}
     # is second row, third column
     # i.e. 14th space/13th index in flat list
@@ -76,5 +79,20 @@ defmodule Tafl.Impl.Spaces do
     |> List.flatten()
     |> Enum.map(&Space.render/1)
     |> Enum.chunk_every(@board_size)
+  end
+
+  def coord_map(spaces, {row_offset, col_offset} \\ {0, 0}) do
+    # provide a coordinate map like %{ {row, col}: Space, ... }
+    # provide a row and column offset to make a "relative" map
+    # to that location
+    coords =
+      for r <- (1 - row_offset)..(@board_size - row_offset) do
+        for c <- (1 - col_offset)..(@board_size - col_offset) do
+          {r, c}
+        end
+      end
+
+    Enum.zip(List.flatten(coords), List.flatten(spaces))
+    |> Enum.into(%{})
   end
 end
