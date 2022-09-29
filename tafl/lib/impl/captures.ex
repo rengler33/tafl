@@ -26,7 +26,7 @@ defmodule Tafl.Impl.Captures do
 
     captured? =
       get_space_from_coord_map(check_location, coord_map)
-      |> IO.inspect(label: "piece")
+      |> IO.inspect(label: "space")
       |> Map.fetch!(:piece)
       |> captured?(defender, surrounding_spaces)
 
@@ -77,11 +77,12 @@ defmodule Tafl.Impl.Captures do
 
   defp captured?(_piece, _defender, _surrounding_spaces), do: false
 
-  defp space_can_capture?(space, attacker) when space.piece.owner == attacker do
+  defp space_can_capture?(space, attacker)
+       when space.piece.owner == attacker or space.kind == :corner or space.kind == :center do
     IO.puts("checking if space can capture because attacker present")
     IO.inspect(space)
     IO.puts("attacker: #{attacker}")
-    space.kind == :corner or space.kind == :center or space.piece.kind != nil
+    true
   end
 
   defp space_can_capture?(_, _), do: false
