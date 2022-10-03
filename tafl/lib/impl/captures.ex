@@ -1,16 +1,28 @@
 defmodule Tafl.Impl.Captures do
-  alias Tafl.Impl.{Space, Spaces}
+  alias Tafl.Impl.{Board, Space}
 
-  def perform_captures(spaces, player, new_location) do
-    coord_map = Spaces.coord_map(spaces, new_location)
+  defp directions({r, c}) do
     # left, right, up, down
-    [{0, -1}, {0, 1}, {-1, 0}, {1, 0}]
-    |> Enum.map(&check_if_captured(&1, player, coord_map))
-    |> IO.inspect(label: "captures (l/r/u/d)")
-    |> Enum.reduce(spaces, &capture(&1, &2, new_location))
+    [{r, c - 1}, {r, c + 1}, {r - 1, c}, {r + 1, c}]
   end
 
-  defp check_if_captured(check_location, attacker, coord_map) do
+  def perform_captures(board, player, new_location) do
+    # coord_map = Spaces.coord_map(spaces, new_location)
+    # TODO need to create the function that will convert the
+    # absolute coordinate map to the relative coordinate map
+
+    # left, right, up, down
+    # [{0, -1}, {0, 1}, {-1, 0}, {1, 0}]
+    # new_spaces =
+    directions(new_location)
+    |> Enum.map(&check_if_captured(&1, player, board))
+    |> IO.inspect(label: "captures (l/r/u/d)")
+    |> Enum.reduce(board, &capture(&1, &2))
+
+    # %Board{board | spaces: new_spaces}
+  end
+
+  defp check_if_captured(check_location, attacker, board) do
     IO.puts("****************")
     IO.puts("checking if captured")
 
@@ -22,10 +34,10 @@ defmodule Tafl.Impl.Captures do
 
     surrounding_spaces =
       check_location
-      |> get_surrounding_spaces(coord_map)
+      |> get_surrounding_spaces(board.spaces)
 
     captured? =
-      get_space_from_coord_map(check_location, coord_map)
+      get_space_from_coord_map(check_location, board.spaces)
       |> IO.inspect(label: "space")
       |> Map.fetch!(:piece)
       |> captured?(defender, surrounding_spaces)
@@ -33,9 +45,10 @@ defmodule Tafl.Impl.Captures do
     {check_location, captured?}
   end
 
-  def get_surrounding_spaces({r, c}, coord_map) do
+  def get_surrounding_spaces(location, coord_map) do
     # left, right, up, down
-    [{r, c - 1}, {r, c + 1}, {r - 1, c}, {r + 1, c}]
+    # [{r, c - 1}, {r, c + 1}, {r - 1, c}, {r + 1, c}]
+    directions(location)
     |> get_spaces_from_coord_map(coord_map)
     |> IO.inspect(label: "surrounding spaces")
   end
@@ -87,20 +100,19 @@ defmodule Tafl.Impl.Captures do
 
   defp space_can_capture?(_, _), do: false
 
-  defp capture({{r_rel, c_rel}, captured?}, spaces, {r, c}) when captured? == true do
+  defp capture({location, captured?}, board) when captured? == true do
     # TODO decide - if capturing king, i don't actually want to capture
     # but do want to return game state over? maybe not, maybe this is better
-    location = {r_rel + r, c_rel + c}
     IO.inspect(location, label: "CAPTURING")
 
-    {new_spaces, _piece} =
-      spaces
-      |> Spaces.remove_piece(location)
+    {new_board, _piece} =
+      board
+      |> Board.remove_piece(location)
 
-    new_spaces
+    new_board
   end
 
-  defp capture(_, spaces, _), do: spaces
+  defp capture(_, board), do: board
 
   # TODO refactor, copying from Game
   defp other_player(:p1), do: :p2

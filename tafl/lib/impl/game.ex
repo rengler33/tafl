@@ -1,18 +1,19 @@
 defmodule Tafl.Impl.Game do
+  alias Tafl.Impl.{Board, Captures, Rules, WinConditions}
+
   defstruct(
-    spaces: [],
+    # TODO: how to specify board struct type?
+    board: nil,
     turn: nil,
-    # initializing, waiting, over, invalid_move
+    # state: initializing, waiting, over, invalid_move
     state: :initializing,
     message: "",
     winner: nil
   )
 
-  alias Tafl.Impl.{Captures, GameConfiguration, Rules, Spaces, WinConditions}
-
   def new() do
-    spaces = GameConfiguration.new_game_spaces(:basic)
-    %__MODULE__{spaces: spaces, turn: :p2, state: :waiting}
+    board = Board.new(:basic)
+    %__MODULE__{board: board, turn: :p2, state: :waiting}
   end
 
   def make_move(game, _old_location, _new_location) when game.winner != nil do
@@ -31,7 +32,7 @@ defmodule Tafl.Impl.Game do
   #########################################
 
   def render(game) when game.state != :over do
-    rendered_spaces = Spaces.render_spaces(game.spaces)
+    rendered_spaces = Board.render_spaces(game.board)
 
     %{
       spaces: rendered_spaces,
@@ -42,7 +43,7 @@ defmodule Tafl.Impl.Game do
   end
 
   def render(game) when game.state == :over do
-    rendered_spaces = Spaces.render_spaces(game.spaces)
+    rendered_spaces = Board.render_spaces(game.board)
 
     %{
       spaces: rendered_spaces,
@@ -69,16 +70,16 @@ defmodule Tafl.Impl.Game do
   end
 
   defp move_piece(game, old_location, new_location) do
-    {spaces, piece} = Spaces.remove_piece(game.spaces, old_location)
-    new_spaces = Spaces.place_piece(spaces, new_location, piece)
-    %__MODULE__{game | spaces: new_spaces}
+    {board, piece} = Board.remove_piece(game.board, old_location)
+    new_board = Board.place_piece(board, new_location, piece)
+    %__MODULE__{game | board: new_board}
   end
 
   #########################################
 
   defp perform_captures(game, new_location) do
-    new_spaces = Captures.perform_captures(game.spaces, game.turn, new_location)
-    %__MODULE__{game | spaces: new_spaces}
+    new_board = Captures.perform_captures(game.board, game.turn, new_location)
+    %__MODULE__{game | board: new_board}
   end
 
   defp evaluate_win(game) do

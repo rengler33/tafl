@@ -1,5 +1,5 @@
 defmodule Tafl.Impl.Rules do
-  alias Tafl.Impl.{Piece, Spaces}
+  alias Tafl.Impl.{Board, Piece}
 
   def bad_move(game, move) do
     checks = [
@@ -37,9 +37,9 @@ defmodule Tafl.Impl.Rules do
     {res, msg}
   end
 
-  defp is_moving_off_the_board(game, {_, {newx, newy}}) do
+  defp is_moving_off_the_board(game, {_, {new_row, new_col}}) do
     msg = "You cannot move off the board."
-    res = newx > Enum.count(List.first(game.spaces)) or newy > Enum.count(game.spaces)
+    res = new_row > game.board.size or new_col > game.board.size
     {res, msg}
   end
 
@@ -51,22 +51,22 @@ defmodule Tafl.Impl.Rules do
 
   defp is_trying_to_move_from_a_space_without_a_piece(game, {old_loc, _}) do
     msg = "You cannot move a piece from an empty space."
-    piece = Spaces.get_piece(game.spaces, old_loc)
+    piece = Board.get_piece(game.board, old_loc)
     res = piece == %Piece{}
     {res, msg}
   end
 
   defp is_not_players_turn(game, {old_location, _}) do
     msg = "That piece cannot be moved by you."
-    piece = Spaces.get_piece(game.spaces, old_location)
+    piece = Board.get_piece(game.board, old_location)
     res = game.turn != piece.owner
     {res, msg}
   end
 
   defp is_stopping_on_hostile_square_when_not_king(game, {old_loc, new_loc}) do
     msg = "You cannot stop on hostile square if not king."
-    old_piece = Spaces.get_piece(game.spaces, old_loc)
-    new_space = Spaces.get_space(game.spaces, new_loc)
+    old_piece = Board.get_piece(game.board, old_loc)
+    new_space = Board.get_space(game.board, new_loc)
     res = old_piece.kind != :king and new_space.kind in [:corner, :center]
     {res, msg}
   end
@@ -75,7 +75,7 @@ defmodule Tafl.Impl.Rules do
     msg = "You cannot move through or stop on another piece."
 
     res =
-      Spaces.collect_spaces(game.spaces, move)
+      Board.collect_spaces(game.board, move)
       |> Enum.any?(fn space -> space.piece != %Piece{} end)
 
     {res, msg}

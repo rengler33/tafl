@@ -22,9 +22,10 @@ defmodule Tafl.Impl.WinConditions do
   #########################################
 
   defp king_in_corner(game) do
+    # TODO Make this function unaware of struct structure?
     winner =
-      game.spaces
-      |> List.flatten()
+      game.board.spaces
+      |> Map.values()
       |> Enum.filter(&(&1.kind == :corner and Map.get(&1.piece, :kind, nil) == :king))
       |> Enum.any?()
 
@@ -36,8 +37,8 @@ defmodule Tafl.Impl.WinConditions do
 
   defp king_has_been_captured(game) do
     king_still_in_play =
-      game.spaces
-      |> List.flatten()
+      game.board.spaces
+      |> Map.values()
       |> Enum.filter(&(Map.get(&1.piece, :kind, nil) == :king))
       |> Enum.any?()
 
