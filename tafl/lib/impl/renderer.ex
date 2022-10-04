@@ -1,6 +1,4 @@
 defmodule Tafl.Impl.Renderer do
-  alias Tafl.Impl.Piece
-
   def render_game(game) when game.state != :over do
     rendered_spaces = render_spaces(game.board)
 
@@ -32,12 +30,10 @@ defmodule Tafl.Impl.Renderer do
   end
 
   def render_space(space) do
-    empty = %Piece{}
-
     case {space.kind, space.piece} do
-      {:corner, ^empty} -> "X"
-      {:center, ^empty} -> "X"
-      {_, ^empty} -> " "
+      {:corner, %{kind: nil}} -> "X"
+      {:center, %{kind: nil}} -> "X"
+      {_, %{kind: nil}} -> " "
       {_, piece} -> render_piece(piece)
     end
   end
