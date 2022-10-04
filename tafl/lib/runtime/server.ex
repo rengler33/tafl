@@ -1,5 +1,5 @@
 defmodule Tafl.Runtime.Server do
-  alias Tafl.Impl.Game
+  alias Tafl.Impl.{Game, Renderer}
 
   use GenServer
 
@@ -13,11 +13,11 @@ defmodule Tafl.Runtime.Server do
 
   def handle_call({:make_move, old_loc, new_loc}, _from, game) do
     updated_game = Game.make_move(game, old_loc, new_loc)
-    {:reply, Game.render(updated_game), updated_game}
+    {:reply, Renderer.render_game(updated_game), updated_game}
   end
 
   def handle_call({:show_board}, _from, game) do
-    render = Game.render(game)
+    render = Renderer.render_game(game)
     {:reply, render, game}
   end
 

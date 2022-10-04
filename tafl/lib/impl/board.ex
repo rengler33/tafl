@@ -28,14 +28,6 @@ defmodule Tafl.Impl.Board do
     |> Enum.into(%{})
   end
 
-  def render_spaces(board) do
-    for r <- 1..board.size do
-      for c <- 1..board.size do
-        Space.render(Map.get(board.spaces, {r, c}))
-      end
-    end
-  end
-
   def collect_spaces(board, {{old_row, old_col}, {new_row, new_col}}) when old_row == new_row do
     [_head | tail] =
       for c <- old_col..new_col do

@@ -31,30 +31,6 @@ defmodule Tafl.Impl.Game do
 
   #########################################
 
-  def render(game) when game.state != :over do
-    rendered_spaces = Board.render_spaces(game.board)
-
-    %{
-      spaces: rendered_spaces,
-      state: game.state,
-      message: game.message,
-      turn: game.turn
-    }
-  end
-
-  def render(game) when game.state == :over do
-    rendered_spaces = Board.render_spaces(game.board)
-
-    %{
-      spaces: rendered_spaces,
-      state: game.state,
-      message: game.message,
-      winner: game.winner
-    }
-  end
-
-  #########################################
-
   defp valid_move?(game, move) do
     {res, msg} = Rules.bad_move(game, move)
     {!res, msg}

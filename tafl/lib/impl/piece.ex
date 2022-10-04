@@ -6,15 +6,4 @@ defmodule Tafl.Impl.Piece do
   def make_piece(owner, kind) do
     %__MODULE__{owner: owner, kind: kind}
   end
-
-  #########################################
-  def render(piece) do
-    case {piece.owner, piece.kind} do
-      {:p1, :pawn} -> "+"
-      {:p2, :pawn} -> "o"
-      {_, :king} -> "K"
-      # this actually means an error
-      {_, _} -> "?"
-    end
-  end
 end

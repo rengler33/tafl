@@ -19,17 +19,4 @@ defmodule Tafl.Impl.Space do
   def remove_piece(space) do
     %__MODULE__{space | piece: %Piece{}}
   end
-
-  #########################################
-
-  def render(space) do
-    empty = %Piece{}
-
-    case {space.kind, space.piece} do
-      {:corner, ^empty} -> "X"
-      {:center, ^empty} -> "X"
-      {_, ^empty} -> " "
-      {_, piece} -> Piece.render(piece)
-    end
-  end
 end
