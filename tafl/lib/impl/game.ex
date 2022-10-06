@@ -1,21 +1,30 @@
 defmodule Tafl.Impl.Game do
   alias Tafl.Impl.{Board, Captures, Rules, WinConditions}
+  alias Tafl.Type
+
+  @type t :: %__MODULE__{
+          board: Board.t(),
+          turn: Type.player(),
+          state: Type.state(),
+          message: String.t(),
+          winner: Type.player() | nil
+        }
 
   defstruct(
-    # TODO: how to specify board struct type?
     board: nil,
     turn: nil,
-    # state: initializing, waiting, over, invalid_move
     state: :initializing,
     message: "",
     winner: nil
   )
 
+  @spec new() :: t()
   def new() do
     board = Board.new(:basic)
     %__MODULE__{board: board, turn: :p2, state: :waiting}
   end
 
+  @spec make_move(t(), Type.rc_loc(), Type.rc_loc()) :: t()
   def make_move(game, _old_location, _new_location) when game.winner != nil do
     %__MODULE__{game | message: "The game is already over."}
   end
@@ -31,11 +40,13 @@ defmodule Tafl.Impl.Game do
 
   #########################################
 
+  @spec valid_move?(t(), Type.rc_loc()) :: {boolean(), String.t()}
   defp valid_move?(game, move) do
     {res, msg} = Rules.bad_move(game, move)
     {!res, msg}
   end
 
+  # @spec accept_move(t(), {Type.rc_loc(), Type.rc_loc()}, {boolean(), String.t()}) :: t()
   defp accept_move(game, {old_location, new_location}, {_valid = true, _msg}) do
     new_game = move_piece(game, old_location, new_location)
     %__MODULE__{new_game | state: :waiting, message: ""}
@@ -45,6 +56,7 @@ defmodule Tafl.Impl.Game do
     %__MODULE__{game | state: :invalid_move, message: msg}
   end
 
+  # @spec move_piece(t(), Type.rc_loc(), rc_loc()) :: t()
   defp move_piece(game, old_location, new_location) do
     {board, piece} = Board.remove_piece(game.board, old_location)
     new_board = Board.place_piece(board, new_location, piece)
@@ -53,16 +65,19 @@ defmodule Tafl.Impl.Game do
 
   #########################################
 
+  @spec perform_captures(t(), Type.rc_loc()) :: t()
   defp perform_captures(game, new_location) do
     new_board = Captures.perform_captures(game.board, game.turn, new_location)
     %__MODULE__{game | board: new_board}
   end
 
+  @spec evaluate_win(t()) :: t()
   defp evaluate_win(game) do
-    evaluate_win(game, winner?(game))
+    do_evaluate_win(game, winner?(game))
   end
 
-  defp evaluate_win(game, {_winner = true, player}) do
+  @spec do_evaluate_win(t(), {boolean(), Type.player()}) :: t()
+  defp do_evaluate_win(game, {winner, player}) when winner == true do
     %__MODULE__{
       game
       | state: :over,
@@ -71,20 +86,23 @@ defmodule Tafl.Impl.Game do
     }
   end
 
-  defp evaluate_win(game, _no_winner), do: game
+  defp do_evaluate_win(game, _no_winner), do: game
 
+  @spec winner?(t()) :: {boolean(), Type.player()}
   defp winner?(game) do
     WinConditions.check(game)
   end
 
   #########################################
 
+  @spec alternate_turn(t()) :: t()
   defp alternate_turn(game) when game.state not in [:invalid_move, :over] do
     %__MODULE__{game | turn: do_alternate_turn(game.turn)}
   end
 
   defp alternate_turn(game), do: game
 
+  @spec do_alternate_turn(Type.player()) :: Type.player()
   defp do_alternate_turn(:p1), do: :p2
   defp do_alternate_turn(:p2), do: :p1
 end

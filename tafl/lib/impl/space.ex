@@ -1,8 +1,12 @@
 defmodule Tafl.Impl.Space do
   alias Tafl.Impl.Piece
+  @type space_kind :: :corner | :edge | :basic | :center
 
+  @type t :: %__MODULE__{
+          kind: space_kind() | nil,
+          piece: Piece.t()
+        }
   defstruct(kind: nil, piece: %Piece{})
-  # kind: corner, edge, basic, center
 
   def make_space(kind) do
     %__MODULE__{kind: kind}

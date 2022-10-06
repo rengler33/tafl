@@ -1,4 +1,8 @@
 defmodule Tafl.Impl.WinConditions do
+  alias Tafl.Impl.Game
+  alias Tafl.Type
+
+  @spec check(Game.t()) :: {boolean(), Type.player()}
   def check(game) do
     checks = [
       &king_in_corner/1,

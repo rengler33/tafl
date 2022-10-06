@@ -1,11 +1,20 @@
 defmodule Tafl.Impl.Board do
+  alias Tafl.Impl.{GameConfiguration, Space}
+  alias Tafl.Type
+
+  @type t :: %__MODULE__{
+          spaces: Type.spaces(),
+          size: integer()
+        }
+
+  @type kind :: :basic
+
   defstruct(
     spaces: %{},
     size: 11
   )
 
-  alias Tafl.Impl.{GameConfiguration, Space}
-
+  @spec new(kind()) :: t()
   def new(kind) do
     board = %__MODULE__{}
     spaces_lists = GameConfiguration.new_game_spaces(kind)
