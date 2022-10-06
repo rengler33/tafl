@@ -31,7 +31,9 @@ TextClient.start
 
 ## Next Steps
 - [x] implement the basic working game (none of the additional "Copenhagen" rules)
+- [x] build a text-based client
 - [ ] build full test suite of game implementation
+- [ ] build a game server registry for running & accessing many games by random name
 - [ ] implement the copenhagen rules (shieldwall capture & surrounding the king)
 - [ ] build phoenix client
 
