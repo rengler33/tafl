@@ -33,7 +33,7 @@ TextClient.start
 
 The runtime kicks off the Tafl application. This application is meant to run in its own node. An "application" is an independent entity that starts itself and manages it's own lifecycle.
 
-The application starts with a Supervisor. That supervisor starts a DynamicSupervisor. A DynamicSupervisor waits to start child processes until instructed, and then supervisors it. When a client wants to start a game, the request goes to the DynamicSupervisor.
+The application starts with a Supervisor. That supervisor starts a DynamicSupervisor. A DynamicSupervisor waits to start child processes until instructed, and then supervisors them. When a client wants to start a game, the request goes to the DynamicSupervisor.
 
 Starting a game means starting a game GenServer. There can be many games started, each as their own GenServer. Think of this application node as a "service" which can create many game "servers".
 
