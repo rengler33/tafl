@@ -23,4 +23,9 @@ defmodule Tafl.Impl.Space do
   def remove_piece(space) do
     %__MODULE__{space | piece: %Piece{}}
   end
+
+  def get_piece(space) do
+    space
+    |> Map.get(:piece)
+  end
 end

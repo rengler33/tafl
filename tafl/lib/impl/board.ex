@@ -59,10 +59,9 @@ defmodule Tafl.Impl.Board do
     Map.get(board.spaces, location)
   end
 
-  # TODO refactor this to the Space module
   def get_piece(board, location) do
     get_space(board, location)
-    |> Map.get(:piece)
+    |> Space.get_piece()
   end
 
   def place_piece(board, location, piece) do
