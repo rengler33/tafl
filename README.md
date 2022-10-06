@@ -29,6 +29,12 @@ iex --sname c1 -S mix
 TextClient.start
 ```
 
+## Next Steps
+- [x] implement the basic working game (none of the additional "Copenhagen" rules)
+- [ ] build full test suite of game implementation
+- [ ] implement the copenhagen rules (shieldwall capture & surrounding the king)
+- [ ] build phoenix client
+
 ## Application Design
 
 The runtime kicks off the Tafl application. This application is meant to run in its own node. An "application" is an independent entity that starts itself and manages it's own lifecycle.
