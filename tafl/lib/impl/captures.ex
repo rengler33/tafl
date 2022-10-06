@@ -1,5 +1,5 @@
 defmodule Tafl.Impl.Captures do
-  alias Tafl.Impl.{Board, Space}
+  alias Tafl.Impl.{Board, Space, Utils}
 
   defp directions({r, c}) do
     # left, right, up, down
@@ -7,19 +7,10 @@ defmodule Tafl.Impl.Captures do
   end
 
   def perform_captures(board, player, new_location) do
-    # coord_map = Spaces.coord_map(spaces, new_location)
-    # TODO need to create the function that will convert the
-    # absolute coordinate map to the relative coordinate map
-
-    # left, right, up, down
-    # [{0, -1}, {0, 1}, {-1, 0}, {1, 0}]
-    # new_spaces =
     directions(new_location)
     |> Enum.map(&check_if_captured(&1, player, board))
     |> IO.inspect(label: "captures (l/r/u/d)")
     |> Enum.reduce(board, &capture(&1, &2))
-
-    # %Board{board | spaces: new_spaces}
   end
 
   defp check_if_captured(check_location, attacker, board) do
@@ -27,7 +18,7 @@ defmodule Tafl.Impl.Captures do
     IO.puts("checking if captured")
 
     defender =
-      other_player(attacker)
+      Utils.other_player(attacker)
       |> IO.inspect(label: "defender")
 
     IO.inspect(attacker, label: "attacker")
@@ -64,7 +55,7 @@ defmodule Tafl.Impl.Captures do
 
   defp captured?(piece, defender, surrounding_spaces)
        when piece.kind == :king and piece.owner == defender do
-    attacker = other_player(defender)
+    attacker = Utils.other_player(defender)
 
     surrounding_spaces
     |> Enum.map(&space_can_capture?(&1, attacker))
@@ -73,7 +64,7 @@ defmodule Tafl.Impl.Captures do
 
   defp captured?(piece, defender, surrounding_spaces)
        when piece.kind != nil and piece.owner == defender do
-    attacker = other_player(defender)
+    attacker = Utils.other_player(defender)
     IO.inspect(piece, label: "checking piece")
     IO.inspect(defender, label: "defender")
 
@@ -113,8 +104,4 @@ defmodule Tafl.Impl.Captures do
   end
 
   defp capture(_, board), do: board
-
-  # TODO refactor, copying from Game
-  defp other_player(:p1), do: :p2
-  defp other_player(:p2), do: :p1
 end

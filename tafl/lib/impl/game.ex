@@ -1,5 +1,5 @@
 defmodule Tafl.Impl.Game do
-  alias Tafl.Impl.{Board, Captures, Rules, WinConditions}
+  alias Tafl.Impl.{Board, Captures, Rules, Utils, WinConditions}
   alias Tafl.Type
 
   @type t :: %__MODULE__{
@@ -97,12 +97,8 @@ defmodule Tafl.Impl.Game do
 
   @spec alternate_turn(t()) :: t()
   defp alternate_turn(game) when game.state not in [:invalid_move, :over] do
-    %__MODULE__{game | turn: do_alternate_turn(game.turn)}
+    %__MODULE__{game | turn: Utils.other_player(game.turn)}
   end
 
   defp alternate_turn(game), do: game
-
-  @spec do_alternate_turn(Type.player()) :: Type.player()
-  defp do_alternate_turn(:p1), do: :p2
-  defp do_alternate_turn(:p2), do: :p1
 end
