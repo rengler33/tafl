@@ -9,6 +9,7 @@ defmodule Tafl.Impl.Piece do
 
   defstruct [:kind, :owner]
 
+  @spec make_piece(Type.player(), piece_kind()) :: t()
   def make_piece(owner, kind) do
     %__MODULE__{owner: owner, kind: kind}
   end

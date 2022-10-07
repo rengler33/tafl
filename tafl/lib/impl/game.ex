@@ -40,13 +40,13 @@ defmodule Tafl.Impl.Game do
 
   #########################################
 
-  @spec valid_move?(t(), Type.rc_loc()) :: {boolean(), String.t()}
+  @spec valid_move?(t(), Type.move()) :: {boolean(), String.t()}
   defp valid_move?(game, move) do
     {res, msg} = Rules.bad_move(game, move)
     {!res, msg}
   end
 
-  # @spec accept_move(t(), {Type.rc_loc(), Type.rc_loc()}, {boolean(), String.t()}) :: t()
+  @spec accept_move(t(), Type.move(), {boolean(), String.t()}) :: t()
   defp accept_move(game, {old_location, new_location}, {_valid = true, _msg}) do
     new_game = move_piece(game, old_location, new_location)
     %__MODULE__{new_game | state: :waiting, message: ""}
@@ -56,7 +56,7 @@ defmodule Tafl.Impl.Game do
     %__MODULE__{game | state: :invalid_move, message: msg}
   end
 
-  # @spec move_piece(t(), Type.rc_loc(), rc_loc()) :: t()
+  @spec move_piece(t(), Type.rc_loc(), Type.rc_loc()) :: t()
   defp move_piece(game, old_location, new_location) do
     {board, piece} = Board.remove_piece(game.board, old_location)
     new_board = Board.place_piece(board, new_location, piece)

@@ -19,6 +19,8 @@ defmodule Tafl.MixProject do
   end
 
   defp deps do
-    []
+    [
+      {:dialyxir, "~> 1.0", only: [:dev], runtime: false}
+    ]
   end
 end
