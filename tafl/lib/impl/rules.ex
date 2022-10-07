@@ -1,6 +1,10 @@
 defmodule Tafl.Impl.Rules do
-  alias Tafl.Impl.{Board, Piece}
+  alias Tafl.Impl.{Board, Game, Piece}
+  alias Tafl.Type
 
+  @type move_response :: {boolean(), String.t()}
+
+  @spec bad_move(Game.t(), Type.move()) :: move_response()
   def bad_move(game, move) do
     checks = [
       &is_not_moving/2,
@@ -16,6 +20,7 @@ defmodule Tafl.Impl.Rules do
     check_bad_move(checks, game, move)
   end
 
+  @spec check_bad_move(list(), Game.t(), Type.move()) :: move_response()
   defp check_bad_move([], _game, _move) do
     {false, ""}
   end

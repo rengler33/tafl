@@ -1,4 +1,5 @@
 defmodule Tafl.Type do
+  @type game_type :: :basic
   @type state :: :initializing | :waiting | :over | :invalid_move
   @type player :: :p1 | :p2
   @type rc_loc :: {integer(), integer()}

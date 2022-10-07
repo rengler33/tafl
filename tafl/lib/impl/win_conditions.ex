@@ -2,7 +2,9 @@ defmodule Tafl.Impl.WinConditions do
   alias Tafl.Impl.Game
   alias Tafl.Type
 
-  @spec check(Game.t()) :: {boolean(), Type.player()}
+  @type win_response :: {boolean(), Type.player()}
+
+  @spec check(Game.t()) :: win_response()
   def check(game) do
     checks = [
       &king_in_corner/1,
@@ -12,6 +14,7 @@ defmodule Tafl.Impl.WinConditions do
     check_win(checks, game)
   end
 
+  @spec check_win(list, Game.t()) :: win_response()
   defp check_win([], _game) do
     {false, nil}
   end
@@ -26,7 +29,6 @@ defmodule Tafl.Impl.WinConditions do
   #########################################
 
   defp king_in_corner(game) do
-    # TODO Make this function unaware of struct structure?
     winner =
       game.board.spaces
       |> Map.values()

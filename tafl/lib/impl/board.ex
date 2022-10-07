@@ -19,24 +19,8 @@ defmodule Tafl.Impl.Board do
   def new(kind) do
     board = %__MODULE__{}
     spaces_lists = GameConfiguration.new_game_spaces(kind)
-    spaces = coord_map(spaces_lists, board.size)
+    spaces = GameConfiguration.coord_map(spaces_lists, board.size)
     %__MODULE__{board | spaces: spaces}
-  end
-
-  # TODO spec this out with the game configuration
-  def coord_map(spaces_lists, board_size, {row_offset, col_offset} \\ {0, 0}) do
-    # provide a coordinate map like %{ {row, col}: Space, ... }
-    # provide a row and column offset to make a "relative" map
-    # to that location
-    coords =
-      for r <- (1 - row_offset)..(board_size - row_offset) do
-        for c <- (1 - col_offset)..(board_size - col_offset) do
-          {r, c}
-        end
-      end
-
-    Enum.zip(List.flatten(coords), List.flatten(spaces_lists))
-    |> Enum.into(%{})
   end
 
   @spec collect_spaces(t(), {Type.rc_loc(), Type.rc_loc()}) :: [Space.t()]

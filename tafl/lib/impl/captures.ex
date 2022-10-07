@@ -1,11 +1,13 @@
 defmodule Tafl.Impl.Captures do
-  alias Tafl.Impl.{Board, Space, Utils}
+  alias Tafl.Impl.{Board, Piece, Space, Utils}
+  alias Tafl.Type
 
   defp directions({r, c}) do
     # left, right, up, down
     [{r, c - 1}, {r, c + 1}, {r - 1, c}, {r + 1, c}]
   end
 
+  @spec perform_captures(Board.t(), Type.player(), Type.rc_loc()) :: Board.t()
   def perform_captures(board, player, new_location) do
     directions(new_location)
     |> Enum.map(&check_if_captured(&1, player, board))
@@ -13,6 +15,7 @@ defmodule Tafl.Impl.Captures do
     |> Enum.reduce(board, &capture(&1, &2))
   end
 
+  @spec check_if_captured(Type.rc_loc(), Type.player(), Board.t()) :: {Type.rc_loc(), boolean()}
   defp check_if_captured(check_location, attacker, board) do
     IO.puts("****************")
     IO.puts("checking if captured")
@@ -36,23 +39,25 @@ defmodule Tafl.Impl.Captures do
     {check_location, captured?}
   end
 
+  @spec get_surrounding_spaces(Type.rc_loc(), Board.spaces()) :: list(Space.t())
   def get_surrounding_spaces(location, coord_map) do
-    # left, right, up, down
-    # [{r, c - 1}, {r, c + 1}, {r - 1, c}, {r + 1, c}]
     directions(location)
     |> get_spaces_from_coord_map(coord_map)
     |> IO.inspect(label: "surrounding spaces")
   end
 
+  @spec get_spaces_from_coord_map(list(Type.rc_loc()), Board.spaces()) :: list(Space.t())
   defp get_spaces_from_coord_map(locations, coord_map) do
     locations
     |> Enum.map(&get_space_from_coord_map(&1, coord_map))
   end
 
+  @spec get_space_from_coord_map(Type.rc_loc(), Board.spaces()) :: Space.t()
   defp get_space_from_coord_map(location, coord_map) do
     Map.get(coord_map, location, %Space{})
   end
 
+  @spec captured?(Piece.t(), Type.player(), list(Space.t())) :: boolean()
   defp captured?(piece, defender, surrounding_spaces)
        when piece.kind == :king and piece.owner == defender do
     attacker = Utils.other_player(defender)
@@ -81,6 +86,7 @@ defmodule Tafl.Impl.Captures do
 
   defp captured?(_piece, _defender, _surrounding_spaces), do: false
 
+  @spec space_can_capture?(Space.t(), Type.player()) :: boolean()
   defp space_can_capture?(space, attacker)
        when space.piece.owner == attacker or space.kind == :corner or space.kind == :center do
     IO.puts("checking if space can capture because attacker present")
@@ -91,6 +97,7 @@ defmodule Tafl.Impl.Captures do
 
   defp space_can_capture?(_, _), do: false
 
+  @spec capture(Type.rc_loc(), Board.t()) :: Board.t()
   defp capture({location, captured?}, board) when captured? == true do
     # TODO decide - if capturing king, i don't actually want to capture
     # but do want to return game state over? maybe not, maybe this is better
