@@ -31,7 +31,8 @@ TextClient.start
 
 ## Next Steps
 - [x] implement the basic working game (none of the additional "Copenhagen" rules)
-- [x] build a text-based client
+- [x] implement a service that can provide games
+- [x] build a text-based client to play a game
 - [ ] fill out type specs
 - [ ] build full test suite of game implementation
 - [ ] build a game server registry for running & accessing many games by random name
