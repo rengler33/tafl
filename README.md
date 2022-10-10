@@ -38,7 +38,7 @@ TextClient.start
 - [ ] build a game server registry for running & accessing many games by random name
 - [ ] implement the copenhagen rules (shieldwall capture & surrounding the king)
 - [ ] track events so that the game could do things like replay (and possibly undo?)
-- [ ] build phoenix client
+- [ ] build phoenix liveview client
 
 ## Application Design
 
