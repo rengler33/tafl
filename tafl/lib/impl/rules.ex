@@ -6,12 +6,11 @@ defmodule Tafl.Impl.Rules do
 
   @spec bad_move(Game.t(), Type.move()) :: move_response()
   def bad_move(game, move) do
-    with {false, _} <- is_not_moving(game, move),
+    with {false, _} <- is_trying_to_move_from_a_space_without_a_piece(game, move),
+         {false, _} <- is_not_players_turn(game, move),
+         {false, _} <- is_not_moving(game, move),
          {false, _} <- is_moving_off_the_board(game, move),
          {false, _} <- is_not_moving_within_row_or_column(game, move),
-         # everything after here is related to the piece
-         {false, _} <- is_trying_to_move_from_a_space_without_a_piece(game, move),
-         {false, _} <- is_not_players_turn(game, move),
          {false, _} <- is_stopping_on_hostile_square_when_not_king(game, move),
          {false, _} <- is_trying_to_move_through_other_pieces(game, move) do
       {false, ""}
