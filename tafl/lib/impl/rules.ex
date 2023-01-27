@@ -6,29 +6,17 @@ defmodule Tafl.Impl.Rules do
 
   @spec bad_move(Game.t(), Type.move()) :: move_response()
   def bad_move(game, move) do
-    checks = [
-      &is_not_moving/2,
-      &is_moving_off_the_board/2,
-      &is_not_moving_within_row_or_column/2,
-      # everything after here is related to the piece(s)
-      &is_trying_to_move_from_a_space_without_a_piece/2,
-      &is_not_players_turn/2,
-      &is_stopping_on_hostile_square_when_not_king/2,
-      &is_trying_to_move_through_other_pieces/2
-    ]
-
-    check_bad_move(checks, game, move)
-  end
-
-  @spec check_bad_move(list(), Game.t(), Type.move()) :: move_response()
-  defp check_bad_move([], _game, _move) do
-    {false, ""}
-  end
-
-  defp check_bad_move([check_fn | tail], game, move) do
-    case check_fn.(game, move) do
-      {true, message} -> {true, message}
-      _ -> check_bad_move(tail, game, move)
+    with {false, _} <- is_not_moving(game, move),
+         {false, _} <- is_moving_off_the_board(game, move),
+         {false, _} <- is_not_moving_within_row_or_column(game, move),
+         # everything after here is related to the piece
+         {false, _} <- is_trying_to_move_from_a_space_without_a_piece(game, move),
+         {false, _} <- is_not_players_turn(game, move),
+         {false, _} <- is_stopping_on_hostile_square_when_not_king(game, move),
+         {false, _} <- is_trying_to_move_through_other_pieces(game, move) do
+      {false, ""}
+    else
+      {true, msg} -> {true, msg}
     end
   end
 
