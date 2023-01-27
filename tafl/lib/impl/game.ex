@@ -32,10 +32,14 @@ defmodule Tafl.Impl.Game do
   def make_move(game, old_location, new_location) do
     move = {old_location, new_location}
 
-    accept_move(game, move, valid_move?(game, move))
-    |> perform_captures(new_location)
-    |> evaluate_win()
-    |> alternate_turn()
+    with {true, _} <- valid_move?(game, move) do
+      accept_move(game, move)
+      |> perform_captures(new_location)
+      |> evaluate_win()
+      |> alternate_turn()
+    else
+      {false, msg} -> %__MODULE__{game | state: :invalid_move, message: msg}
+    end
   end
 
   #########################################
@@ -46,14 +50,10 @@ defmodule Tafl.Impl.Game do
     {!res, msg}
   end
 
-  @spec accept_move(t(), Type.move(), {boolean(), String.t()}) :: t()
-  defp accept_move(game, {old_location, new_location}, {_valid = true, _msg}) do
+  @spec accept_move(t(), Type.move()) :: t()
+  defp accept_move(game, {old_location, new_location}) do
     new_game = move_piece(game, old_location, new_location)
     %__MODULE__{new_game | state: :waiting, message: ""}
-  end
-
-  defp accept_move(game, _, {_valid = false, msg}) do
-    %__MODULE__{game | state: :invalid_move, message: msg}
   end
 
   @spec move_piece(t(), Type.rc_loc(), Type.rc_loc()) :: t()
