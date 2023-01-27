@@ -6,23 +6,11 @@ defmodule Tafl.Impl.WinConditions do
 
   @spec check(Game.t()) :: win_response()
   def check(game) do
-    checks = [
-      &king_in_corner/1,
-      &king_has_been_captured/1
-    ]
-
-    check_win(checks, game)
-  end
-
-  @spec check_win(list, Game.t()) :: win_response()
-  defp check_win([], _game) do
-    {false, nil}
-  end
-
-  defp check_win([head | tail], game) do
-    case head.(game) do
+    with false <- king_in_corner(game),
+         false <- king_has_been_captured(game) do
+      {false, nil}
+    else
       {true, player} -> {true, player}
-      _ -> check_win(tail, game)
     end
   end
 
