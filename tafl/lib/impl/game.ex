@@ -1,5 +1,5 @@
 defmodule Tafl.Impl.Game do
-  alias Tafl.Impl.{Board, Captures, Rules, Utils, WinConditions}
+  alias Tafl.Impl.{Board, Captures, Player, Rules, Utils, WinConditions}
   alias Tafl.Type
 
   @type t :: %__MODULE__{
@@ -7,7 +7,8 @@ defmodule Tafl.Impl.Game do
           turn: Type.player_indicator(),
           state: Type.state(),
           message: String.t(),
-          winner: Type.player_indicator() | nil
+          winner: Type.player_indicator() | nil,
+          players: %{Type.player_indicator() => Player.t()}
         }
 
   defstruct(
@@ -15,7 +16,8 @@ defmodule Tafl.Impl.Game do
     turn: nil,
     state: :initializing,
     message: "",
-    winner: nil
+    winner: nil,
+    players: %{}
   )
 
   @spec new() :: t()
