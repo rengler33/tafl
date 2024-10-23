@@ -4,10 +4,10 @@ defmodule Tafl.Impl.Game do
 
   @type t :: %__MODULE__{
           board: Board.t(),
-          turn: Type.player(),
+          turn: Type.player_indicator(),
           state: Type.state(),
           message: String.t(),
-          winner: Type.player() | nil
+          winner: Type.player_indicator() | nil
         }
 
   defstruct(
@@ -76,7 +76,7 @@ defmodule Tafl.Impl.Game do
     do_evaluate_win(game, winner?(game))
   end
 
-  @spec do_evaluate_win(t(), {boolean(), Type.player()}) :: t()
+  @spec do_evaluate_win(t(), {boolean(), Type.player_indicator()}) :: t()
   defp do_evaluate_win(game, {winner, player}) when winner == true do
     %__MODULE__{
       game
@@ -88,7 +88,7 @@ defmodule Tafl.Impl.Game do
 
   defp do_evaluate_win(game, _no_winner), do: game
 
-  @spec winner?(t()) :: {boolean(), Type.player()}
+  @spec winner?(t()) :: {boolean(), Type.player_indicator()}
   defp winner?(game) do
     WinConditions.check(game)
   end

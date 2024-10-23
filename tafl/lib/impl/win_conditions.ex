@@ -2,7 +2,7 @@ defmodule Tafl.Impl.WinConditions do
   alias Tafl.Impl.Game
   alias Tafl.Type
 
-  @type win_response :: {boolean(), Type.player()}
+  @type win_response :: {boolean(), Type.player_indicator()}
 
   @spec check(Game.t()) :: win_response()
   def check(game) do
