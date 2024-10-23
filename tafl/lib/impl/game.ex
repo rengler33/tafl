@@ -1,13 +1,14 @@
 defmodule Tafl.Impl.Game do
-  alias Tafl.Impl.{Board, Captures, Rules, Utils, WinConditions}
+  alias Tafl.Impl.{Board, Captures, Player, Rules, Utils, WinConditions}
   alias Tafl.Type
 
   @type t :: %__MODULE__{
-          board: Board.t(),
-          turn: Type.player(),
+          board: Board.t() | nil,
+          turn: Type.player_indicator() | nil,
           state: Type.state(),
           message: String.t(),
-          winner: Type.player() | nil
+          winner: Type.player_indicator() | nil,
+          players: %{:p1 => Player.t() | nil, :p2 => Player.t() | nil}
         }
 
   defstruct(
@@ -15,34 +16,64 @@ defmodule Tafl.Impl.Game do
     turn: nil,
     state: :initializing,
     message: "",
-    winner: nil
+    winner: nil,
+    players: %{p1: nil, p2: nil}
   )
 
   @spec new() :: t()
   def new() do
     board = Board.new(:basic)
-    %__MODULE__{board: board, turn: :p2, state: :waiting}
+    %__MODULE__{board: board, message: "Waiting for players..."}
   end
 
-  @spec make_move(t(), Type.rc_loc(), Type.rc_loc()) :: t()
-  def make_move(game, _old_location, _new_location) when game.winner != nil do
+  @spec set_player(t(), Type.player_indicator(), String.t()) :: t()
+  def set_player(game, indicator, id)
+      when game.state == :initializing and indicator in [:p1, :p2] do
+    new_player = Player.new(id, indicator)
+    players = Map.put(game.players, indicator, new_player)
+
+    {state, turn, message} =
+      case not is_nil(players.p1) and not is_nil(players.p2) do
+        true -> {:waiting, :p2, "Game is started."}
+        false -> {game.state, game.turn, "Player added."}
+      end
+
+    %__MODULE__{game | players: players, state: state, turn: turn, message: message}
+  end
+
+  def set_player(game, _indicator, _id) when game.state != :initializing do
+    %__MODULE__{game | message: "The game is already started."}
+  end
+
+  def set_player(game, indicator, id) do
+    %__MODULE__{game | message: "Unable to add player with #{indicator} and id #{id}"}
+  end
+
+  @spec make_move(t(), Type.rc_loc(), Type.rc_loc(), String.t()) :: t()
+  def make_move(game, _old_location, _new_location, _player_id) when game.winner != nil do
     %__MODULE__{game | message: "The game is already over."}
   end
 
-  def make_move(game, old_location, new_location) do
+  def make_move(game, old_location, new_location, player_id) do
     move = {old_location, new_location}
 
-    with {true, _} <- valid_move?(game, move) do
+    with true <- players_turn?(game, player_id),
+         {true, _} <- valid_move?(game, move) do
       accept_move(game, move)
       |> perform_captures(new_location)
       |> evaluate_win()
       |> alternate_turn()
     else
+      false -> %__MODULE__{game | state: :invalid_move, message: "Not player's turn."}
       {false, msg} -> %__MODULE__{game | state: :invalid_move, message: msg}
     end
   end
 
   #########################################
+
+  defp players_turn?(game, player_id) do
+    player_id == Map.get(game.players, game.turn).id
+  end
 
   @spec valid_move?(t(), Type.move()) :: {boolean(), String.t()}
   defp valid_move?(game, move) do
@@ -76,7 +107,7 @@ defmodule Tafl.Impl.Game do
     do_evaluate_win(game, winner?(game))
   end
 
-  @spec do_evaluate_win(t(), {boolean(), Type.player()}) :: t()
+  @spec do_evaluate_win(t(), {boolean(), Type.player_indicator()}) :: t()
   defp do_evaluate_win(game, {winner, player}) when winner == true do
     %__MODULE__{
       game
@@ -88,7 +119,7 @@ defmodule Tafl.Impl.Game do
 
   defp do_evaluate_win(game, _no_winner), do: game
 
-  @spec winner?(t()) :: {boolean(), Type.player()}
+  @spec winner?(t()) :: {boolean(), Type.player_indicator()}
   defp winner?(game) do
     WinConditions.check(game)
   end

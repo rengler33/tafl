@@ -1,5 +1,8 @@
 defmodule TextClient.Impl.Play do
   def start(game) do
+    # player ids are not important in single-screen play so give them simple identifiers
+    Tafl.add_player_one(game, "1")
+    Tafl.add_player_two(game, "2")
     render = Tafl.show_board(game)
     interact({game, render})
   end
@@ -16,7 +19,8 @@ defmodule TextClient.Impl.Play do
     IO.write("\n\n")
     IO.write(IO.ANSI.cursor_up(2))
     {old_loc, new_loc} = get_move()
-    render = Tafl.make_move(game, old_loc, new_loc)
+    player_id = if render.turn == :p1, do: "1", else: "2"
+    render = Tafl.make_move(game, old_loc, new_loc, player_id)
     interact({game, render})
   end
 

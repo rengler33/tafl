@@ -7,7 +7,7 @@ defmodule Tafl.Impl.Captures do
     [{r, c - 1}, {r, c + 1}, {r - 1, c}, {r + 1, c}]
   end
 
-  @spec perform_captures(Board.t(), Type.player(), Type.rc_loc()) :: Board.t()
+  @spec perform_captures(Board.t(), Type.player_indicator(), Type.rc_loc()) :: Board.t()
   def perform_captures(board, player, new_location) do
     directions(new_location)
     |> Enum.map(&check_if_captured(&1, player, board))
@@ -15,7 +15,8 @@ defmodule Tafl.Impl.Captures do
     |> Enum.reduce(board, &capture(&1, &2))
   end
 
-  @spec check_if_captured(Type.rc_loc(), Type.player(), Board.t()) :: {Type.rc_loc(), boolean()}
+  @spec check_if_captured(Type.rc_loc(), Type.player_indicator(), Board.t()) ::
+          {Type.rc_loc(), boolean()}
   defp check_if_captured(check_location, attacker, board) do
     IO.puts("****************")
     IO.puts("checking if captured")
@@ -57,7 +58,7 @@ defmodule Tafl.Impl.Captures do
     Map.get(coord_map, location, %Space{})
   end
 
-  @spec captured?(Piece.t(), Type.player(), list(Space.t())) :: boolean()
+  @spec captured?(Piece.t(), Type.player_indicator(), list(Space.t())) :: boolean()
   defp captured?(piece, defender, surrounding_spaces)
        when piece.kind == :king and piece.owner == defender do
     attacker = Utils.other_player(defender)
@@ -86,7 +87,7 @@ defmodule Tafl.Impl.Captures do
 
   defp captured?(_piece, _defender, _surrounding_spaces), do: false
 
-  @spec space_can_capture?(Space.t(), Type.player()) :: boolean()
+  @spec space_can_capture?(Space.t(), Type.player_indicator()) :: boolean()
   defp space_can_capture?(space, attacker)
        when space.piece.owner == attacker or space.kind == :corner or space.kind == :center do
     IO.puts("checking if space can capture because attacker present")

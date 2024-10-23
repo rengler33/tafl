@@ -6,7 +6,7 @@ defmodule Tafl.Impl.Renderer do
           spaces: list(),
           state: Type.state(),
           message: String.t(),
-          turn: Type.player()
+          turn: Type.player_indicator()
         }
 
   defstruct(
