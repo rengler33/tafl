@@ -14,7 +14,7 @@ defmodule Tafl.MixProject do
   def application do
     [
       mod: {Tafl.Runtime.Application, []},
-      extra_applications: [:logger]
+      extra_applications: [:logger, :observer, :wx]
     ]
   end
 
