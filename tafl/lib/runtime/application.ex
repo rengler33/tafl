@@ -11,7 +11,7 @@ defmodule Tafl.Runtime.Application do
     Supervisor.start_link(supervisor_spec, strategy: :one_for_one)
   end
 
-  def start_game do
-    DynamicSupervisor.start_child(@supervisor_name, {Tafl.Runtime.Server, nil})
+  def start_game(server_name) do
+    DynamicSupervisor.start_child(@supervisor_name, {Tafl.Runtime.Server, server_name})
   end
 end

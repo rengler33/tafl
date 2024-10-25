@@ -1,17 +1,18 @@
 defmodule TextClient.Impl.Play do
-  def start(game) do
+  def start(server_name) do
     # player ids are not important in single-screen play so give them simple identifiers
-    Tafl.add_player_one(game, "1")
-    Tafl.add_player_two(game, "2")
-    render = Tafl.show_board(game)
-    interact({game, render})
+    # if this step has already been done (re-connected game), this silently continues on
+    Tafl.add_player_one(server_name, "1")
+    Tafl.add_player_two(server_name, "2")
+    render = Tafl.show_board(server_name)
+    interact({server_name, render})
   end
 
-  def interact({_game, render = %{state: :over}}) do
+  def interact({_server_name, render = %{state: :over}}) do
     IO.puts("Congratulations, #{render_player(render.winner)}. You won!")
   end
 
-  def interact({game, render}) do
+  def interact({server_name, render}) do
     IO.puts(IO.ANSI.clear())
     IO.puts("****************************************")
     IO.puts(feedback_for(render))
@@ -20,8 +21,8 @@ defmodule TextClient.Impl.Play do
     IO.write(IO.ANSI.cursor_up(2))
     {old_loc, new_loc} = get_move()
     player_id = if render.turn == :p1, do: "1", else: "2"
-    render = Tafl.make_move(game, old_loc, new_loc, player_id)
-    interact({game, render})
+    render = Tafl.make_move(server_name, old_loc, new_loc, player_id)
+    interact({server_name, render})
   end
 
   ##################################################
