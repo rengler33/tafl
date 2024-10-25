@@ -3,8 +3,8 @@ defmodule Tafl.Runtime.Server do
 
   use GenServer
 
-  def start_link(_) do
-    GenServer.start_link(__MODULE__, nil)
+  def start_link(server_name) do
+    GenServer.start_link(__MODULE__, nil, name: {:global, server_name})
   end
 
   def init(_) do

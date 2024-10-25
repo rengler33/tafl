@@ -21,7 +21,7 @@ cd tafl/
 iex --sname tafl -S mix
 ```
 
-In another terminal run the text client, giving it any shortname like `c1`. Then run `TextClient.start` to play.
+In another terminal run the text client, giving it any shortname like `c1`. Then run `TextClient.start("servername")` to play. Provide any "servername" you'd like.
 
 ```sh
 cd text_client/
